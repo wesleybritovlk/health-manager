@@ -1,0 +1,16 @@
+spring:
+    config.import: optional:secrets.yml
+    application.name: healthmanager
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+    datasource: 
+        driverClassName: org.h2.Driver
+        url: jdbc:h2:file:${H2_PATH}
+        username: sa
+        password: 
+    h2.console:
+        enabled: true
+        path: /h2
