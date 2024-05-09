@@ -45,7 +45,7 @@ class CustomerMapperTest {
         void setup() {
                 mapper = new CustomerMapperImpl(healthProblemMapper);
                 request = new Request("foo", LocalDate.parse("1998-07-23"), Sex.MALE);
-                customer = Customer.builder().id(UUID.randomUUID()).fullName("fooResponse")
+                customer = Customer.builder().id(UUID.randomUUID()).name("fooResponse")
                                 .dateBirth(LocalDate.parse("1998-06-20"))
                                 .sex(Sex.NOT_KNOW).healthProblems(new TreeSet<>()).build();
 
@@ -62,7 +62,7 @@ class CustomerMapperTest {
                                 "test2", BigInteger.TWO);
                 responseProblem2 = new HealthProblemDTO.Response(problem2.getId(), customerId,
                                 "test3", BigInteger.ONE);
-                customerFull = Customer.builder().id(customerId).fullName("fooFull")
+                customerFull = Customer.builder().id(customerId).name("fooFull")
                                 .dateBirth(LocalDate.parse("2001-11-09"))
                                 .sex(Sex.FEMALE).healthProblems(Set.of(problem, problem1, problem2)).build();
         }
@@ -79,7 +79,7 @@ class CustomerMapperTest {
         void itShouldMapCustomerModel_WithCustomerRequest() {
                 Customer model = mapper.toModel(request);
                 assertThat(model).isNotNull();
-                assertThat(model.getFullName()).isEqualTo("foo");
+                assertThat(model.getName()).isEqualTo("foo");
                 assertThat(model.getDateBirth()).isEqualTo(LocalDate.parse("1998-07-23"));
                 assertThat(model.getSex()).isEqualTo(Sex.MALE);
                 assertThat(model.getHealthProblems()).isNotNull();
@@ -90,7 +90,7 @@ class CustomerMapperTest {
         void itShouldMapCustomerModel_WithCustomerAndCustomerRequest() {
                 Customer model = mapper.toModel(customer, request);
                 assertThat(model).isNotNull();
-                assertThat(model.getFullName()).isEqualTo("foo");
+                assertThat(model.getName()).isEqualTo("foo");
                 assertThat(model.getDateBirth()).isEqualTo(LocalDate.parse("1998-07-23"));
                 assertThat(model.getSex()).isEqualTo(Sex.MALE);
                 assertThat(model.getHealthProblems()).isNotNull();
@@ -125,5 +125,11 @@ class CustomerMapperTest {
                 assertThat(response.score()).isEqualTo(BigDecimal.valueOf(76.86));
                 assertThat(response.health_problems()).isNotEmpty();
                 assertThat(response.health_problems()).hasSize(3);
+        }
+
+        @Test
+        void itShouldMapCustomerResponse_WithCustomerIdAndCustomerName() {
+                assertThat(mapper.toResponse(UUID.randomUUID(), "foo")).containsKeys("id", "full_name");
+                assertThat(mapper.toResponse(UUID.randomUUID())).containsKeys("id");
         }
 }

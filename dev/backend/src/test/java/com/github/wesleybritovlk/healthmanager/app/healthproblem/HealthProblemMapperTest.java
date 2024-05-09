@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ class HealthProblemMapperTest {
         customer = Customer.builder().id(UUID.randomUUID()).build();
         request = new Request(customer.getId(), "test1", BigInteger.ONE);
         healthProblem = HealthProblem.builder().id(UUID.randomUUID()).customer(customer)
-                .problemName("test").severity(BigInteger.TWO).build();
+                .hpName("test").severity(BigInteger.TWO).build();
     }
 
     @Test
@@ -42,7 +43,7 @@ class HealthProblemMapperTest {
         HealthProblem model = mapper.toModel(request, customer);
         assertThat(model).isNotNull();
         assertThat(model.getCustomer()).isEqualTo(customer);
-        assertThat(model.getProblemName()).isEqualTo("test1");
+        assertThat(model.getHpName()).isEqualTo("test1");
         assertThat(model.getSeverity()).isEqualTo(BigInteger.ONE);
     }
 
@@ -51,7 +52,7 @@ class HealthProblemMapperTest {
         HealthProblem model = mapper.toModel(healthProblem, request);
         assertThat(model).isNotNull();
         assertThat(model.getCustomer()).isEqualTo(customer);
-        assertThat(model.getProblemName()).isEqualTo("test1");
+        assertThat(model.getHpName()).isEqualTo("test1");
         assertThat(model.getSeverity()).isEqualTo(BigInteger.ONE);
     }
 
@@ -63,5 +64,11 @@ class HealthProblemMapperTest {
         assertThat(response.customer_id()).isEqualTo(healthProblem.getCustomer().getId());
         assertThat(response.problem_name()).isEqualTo("test");
         assertThat(response.severity()).isEqualTo(BigInteger.TWO);
+    }
+
+    @Test
+    void itShouldMapHealthProblemResponse_WithHealthProblemIdAndName() {
+        assertThat(mapper.toResponse(UUID.randomUUID(), "foo")).containsOnlyKeys("id", "problem_name");
+        assertThat(mapper.toResponse(UUID.randomUUID())).containsOnlyKeys("id");
     }
 }
