@@ -5,23 +5,29 @@ import java.util.UUID;
 
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HealthProblemDTO {
         @Validated
         public static record Request(
-                        @NotBlank(message = "Customer uuid is required")
-                        @Size(min = 36, max = 36, message = "Customer uuid is invalid")
-                        UUID customer_id,
+                        @JsonProperty("customer_id")
+                        @NotNull(message = "Customer uuid is required")
+                        UUID customerId,
 
+                        @JsonProperty("problem_name")
                         @NotBlank(message = "Problem name shouldn't be null")
                         @Size(min = 3, max = 50, message = "Problem name must be greater than 3 and up to 50 characters")
-                        String problem_name,
+                        String hpName,
 
-                        @NotBlank(message = "Invalid or null gender.\r\n" + 
-                                        "Check: 'one' '1' or 'two' '2'") 
-                        @Size(min = 3, max = 3, message = "Severity must have more than 1 up to 3 characters")
+                        @NotNull(message = "Invalid or null severity.\r\n" + 
+                                        "Severity Check: '1' or '2'") 
                         BigInteger severity) {
         }
 

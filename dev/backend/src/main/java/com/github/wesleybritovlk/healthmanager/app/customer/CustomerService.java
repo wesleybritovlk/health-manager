@@ -1,9 +1,12 @@
 package com.github.wesleybritovlk.healthmanager.app.customer;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,9 +36,10 @@ class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer create(Request request) {
+    public Map<Object, Object> create(Request request) {
         Customer model = mapper.toModel(request);
-        return repository.saveAndFlush(model);
+        Customer created = repository.saveAndFlush(model);
+        return mapper.toResponse(created.getId(), created.getName());
     }
 
     @Override
@@ -47,25 +51,28 @@ class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Page<Response> findAll(Pageable pageable) {
-        return repository.findAll(pageable)
-                .map(customer -> {
-                    BigInteger severitySumById = repository.findSeveritySumById(customer.getId());
-                    return mapper.toResponse(customer, severitySumById);
-                });
+        List<Response> responses = repository.findAll().stream()
+                .map(customer -> mapper.toResponse(customer, repository.findSeveritySumById(customer.getId())))
+                .sorted((res0, res1) -> res1.score().compareTo(res0.score())).toList();
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), responses.size());
+        return new PageImpl<>(start > end ? List.of() : responses.subList(start, end), pageable, responses.size());
     }
 
     @Override
-    public Customer update(UUID id, Request request) {
+    public Map<Object, Object> update(UUID id, Request request) {
         Customer customer = findCustomer(id);
         Customer model = mapper.toModel(customer, request);
-        return repository.saveAndFlush(model);
+        String name = repository.saveAndFlush(model).getName();
+        return mapper.toResponse(id, name);
     }
 
     @Override
-    public void delete(UUID id) {
+    public Map<Object, Object> delete(UUID id) {
         if (!repository.existsById(id))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Customer not found, please check the id");
         repository.deleteById(id);
+        return mapper.toResponse(id);
     }
 }

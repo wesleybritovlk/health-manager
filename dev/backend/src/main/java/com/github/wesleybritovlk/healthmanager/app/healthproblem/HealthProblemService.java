@@ -1,5 +1,6 @@
 package com.github.wesleybritovlk.healthmanager.app.healthproblem;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -41,12 +42,20 @@ class HealthProblemServiceImpl implements HealthProblemService {
                         "Health Problem not found, please check the id"));
     }
 
+    private void checkHealthProblemsConflict(UUID customerId, String problemName) {
+        if (repository.existsByCustomerIdAndHpName(customerId, problemName))
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This Health Problem already exists in this Customer");
+    }
+
     @Override
-    public HealthProblem create(Request request) {
-        Customer customer = findCustomer(request.customer_id());
+    public Map<Object, Object> create(Request request) {
+        checkHealthProblemsConflict(request.customerId(), request.hpName());
+        Customer customer = findCustomer(request.customerId());
         HealthProblem model = mapper.toModel(request, customer);
         customerRepo.saveAndFlush(customer);
-        return repository.saveAndFlush(model);
+        HealthProblem created = repository.saveAndFlush(model);
+        return mapper.toResponse(created.getId(), created.getHpName());
     }
 
     @Override
@@ -61,16 +70,20 @@ class HealthProblemServiceImpl implements HealthProblemService {
     }
 
     @Override
-    public HealthProblem update(UUID id, Request request) {
+    public Map<Object, Object> update(UUID id, Request request) {
         HealthProblem healthProblem = findHealthProblem(id);
+        if (!healthProblem.getHpName().equals(request.hpName()))
+            checkHealthProblemsConflict(request.customerId(), request.hpName());
         HealthProblem model = mapper.toModel(healthProblem, request);
-        return repository.saveAndFlush(model);
+        String hpName = repository.saveAndFlush(model).getHpName();
+        return mapper.toResponse(id, hpName);
     }
 
     @Override
-    public void delete(UUID id) {
+    public Map<Object, Object> delete(UUID id) {
         HealthProblem healthProblem = findHealthProblem(id);
         healthProblem.getCustomer().getHealthProblems().remove(healthProblem);
         repository.delete(healthProblem);
+        return mapper.toResponse(id);
     }
 }
