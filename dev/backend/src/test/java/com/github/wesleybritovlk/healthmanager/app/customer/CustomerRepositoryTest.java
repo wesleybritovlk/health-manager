@@ -32,25 +32,25 @@ class CustomerRepositoryTest {
 
         @BeforeEach
         void setup() {
-                Customer foo = Customer.builder().fullName("foO").dateBirth(LocalDate.parse("1999-12-01"))
+                Customer foo = Customer.builder().name("foO").dateBirth(LocalDate.parse("1999-12-01"))
                                 .sex(Customer.Sex.MALE).healthProblems(Set.of()).build();
-                Customer foo1 = Customer.builder().fullName("fOo1").dateBirth(LocalDate.parse("2000-01-20"))
+                Customer foo1 = Customer.builder().name("fOo1").dateBirth(LocalDate.parse("2000-01-20"))
                                 .sex(Customer.Sex.NOT_APPLICABLE).healthProblems(Set.of()).build();
 
-                Set<HealthProblem> healthProblems = new TreeSet<>(comparing(HealthProblem::getProblemName));
-                Customer join = Customer.builder().fullName("join").dateBirth(LocalDate.parse("1998-02-10"))
+                Set<HealthProblem> healthProblems = new TreeSet<>(comparing(HealthProblem::getHpName));
+                Customer join = Customer.builder().name("join").dateBirth(LocalDate.parse("1998-02-10"))
                                 .sex(Customer.Sex.FEMALE).healthProblems(healthProblems).build();
-                HealthProblem hpJoinFoo = HealthProblem.builder().customer(join).problemName("test")
+                HealthProblem hpJoinFoo = HealthProblem.builder().customer(join).hpName("test")
                                 .severity(BigInteger.ONE).build();
-                HealthProblem hpJoin1Foo = HealthProblem.builder().customer(join).problemName("test2")
+                HealthProblem hpJoin1Foo = HealthProblem.builder().customer(join).hpName("test2")
                                 .severity(BigInteger.TWO).build();
                 healthProblems.add(hpJoinFoo);
                 healthProblems.add(hpJoin1Foo);
 
-                Set<HealthProblem> healthProblems1 = new TreeSet<>(comparing(HealthProblem::getProblemName));
-                Customer join1 = Customer.builder().fullName("join1").dateBirth(LocalDate.parse("2001-03-05"))
+                Set<HealthProblem> healthProblems1 = new TreeSet<>(comparing(HealthProblem::getHpName));
+                Customer join1 = Customer.builder().name("join1").dateBirth(LocalDate.parse("2001-03-05"))
                                 .sex(Customer.Sex.NOT_KNOW).healthProblems(healthProblems1).build();
-                HealthProblem hpJoinFoo1 = HealthProblem.builder().customer(join1).problemName("test1")
+                HealthProblem hpJoinFoo1 = HealthProblem.builder().customer(join1).hpName("test1")
                                 .severity(BigInteger.TWO).build();
                 healthProblems1.add(hpJoinFoo1);
 
@@ -59,12 +59,12 @@ class CustomerRepositoryTest {
         }
 
         @Test
-        void itShouldFindAllCustomersByFullName_WithLike() {
-                List<Customer> customers = repository.findAllByFullNameLike("FOO");
+        void itShouldFindAllCustomersByName_WithLike() {
+                List<Customer> customers = repository.findAllByNameLike("FOO");
 
                 assertThat(customers).hasSize(2);
-                assertThat(customers.get(0).getFullName()).isEqualTo("foO");
-                assertThat(customers.get(1).getFullName()).isEqualTo("fOo1");
+                assertThat(customers.get(0).getName()).isEqualTo("foO");
+                assertThat(customers.get(1).getName()).isEqualTo("fOo1");
         }
 
         @Test
@@ -74,7 +74,7 @@ class CustomerRepositoryTest {
                 ZonedDateTime oldUpdatedAt = customer.getUpdatedAt();
                 int oldCustomerHash = customer.hashCode();
 
-                Customer update = Customer.builder().id(customerId).fullName("fooUpdated")
+                Customer update = Customer.builder().id(customerId).name("fooUpdated")
                                 .dateBirth(LocalDate.parse("2000-04-30")).sex(Customer.Sex.FEMALE)
                                 .healthProblems(new TreeSet<>()).build();
                 repository.saveAndFlush(update);

@@ -33,15 +33,15 @@ class HealthProblemRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Set<HealthProblem> healthProblems = new TreeSet<>(comparing(HealthProblem::getProblemName));
-        Customer customer = Customer.builder().fullName("foo")
+        Set<HealthProblem> healthProblems = new TreeSet<>(comparing(HealthProblem::getHpName));
+        Customer customer = Customer.builder().name("foo")
                 .dateBirth(LocalDate.parse("1999-12-01")).sex(Customer.Sex.MALE).healthProblems(healthProblems)
                 .build();
 
         healthProblems.add(
-                HealthProblem.builder().customer(customer).problemName("test").severity(BigInteger.ONE).build());
+                HealthProblem.builder().customer(customer).hpName("test").severity(BigInteger.ONE).build());
         healthProblems.add(
-                HealthProblem.builder().customer(customer).problemName("test1").severity(BigInteger.TWO).build());
+                HealthProblem.builder().customer(customer).hpName("test1").severity(BigInteger.TWO).build());
 
         customerRepo.saveAndFlush(customer);
         repository.saveAllAndFlush(healthProblems);
@@ -56,7 +56,7 @@ class HealthProblemRepositoryTest {
         int oldHPHash = healthProblem.hashCode();
 
         HealthProblem update = HealthProblem.builder().id(healthProblemId).customer(oldCustomer)
-                .problemName("test1Updated").severity(BigInteger.ONE).build();
+                .hpName("test1Updated").severity(BigInteger.ONE).build();
 
         repository.saveAndFlush(update);
 
