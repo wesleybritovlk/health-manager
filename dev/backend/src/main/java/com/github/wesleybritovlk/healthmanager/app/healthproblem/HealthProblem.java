@@ -43,14 +43,14 @@ public class HealthProblem implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", foreignKey = @ForeignKey(name = "health_problem_customer_fk"), nullable = false, referencedColumnName = "id")
     @EqualsAndHashCode.Exclude
     private Customer customer;
 
     @Column(nullable = false)
     @Length(min = 3, max = 50)
-    private String problemName;
+    private String hpName;
 
     @Column(nullable = false)
     @Range(min = 1, max = 2)

@@ -45,7 +45,7 @@ public class Customer implements Serializable {
 
     @Column(nullable = false)
     @Length(min = 3, max = 50)
-    private String fullName;
+    private String name;
 
     @Column(nullable = false)
     private LocalDate dateBirth;
