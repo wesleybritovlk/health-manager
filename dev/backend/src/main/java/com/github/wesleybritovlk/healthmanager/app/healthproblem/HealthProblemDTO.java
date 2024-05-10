@@ -26,7 +26,7 @@ public class HealthProblemDTO {
                         @Size(min = 3, max = 50, message = "Problem name must be greater than 3 and up to 50 characters")
                         String hpName,
 
-                        @NotNull(message = "Invalid or null severity.\r\n" + 
+                        @NotNull(message = "Invalid or null severity. " + 
                                         "Severity Check: '1' or '2'") 
                         BigInteger severity) {
         }

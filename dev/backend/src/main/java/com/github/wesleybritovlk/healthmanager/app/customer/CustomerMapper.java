@@ -69,9 +69,7 @@ class CustomerMapperImpl implements CustomerMapper {
     private Set<HealthProblemDTO.Response> getHealthProblemsToResponse(Set<HealthProblem> healthProblems) {
         if (healthProblems.isEmpty())
             return Set.of();
-        var treeSet = new TreeSet<>(comparing(HealthProblem::getId));
-        treeSet.addAll(healthProblems);
-        return treeSet.stream()
+        return healthProblems.stream()
                 .sorted((hp0, hp1) -> Integer.compare(hp1.getSeverity().intValue(), hp0.getSeverity().intValue()))
                 .map(healthProblemMapper::toResponse).collect(Collectors.toCollection(LinkedHashSet::new));
     }

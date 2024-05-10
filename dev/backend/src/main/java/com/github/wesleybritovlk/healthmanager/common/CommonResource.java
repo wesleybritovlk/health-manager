@@ -17,7 +17,7 @@ public class CommonResource {
     }
 
     public static Map<Object, Object> toResource(String message, Object content) {
-        var resource = new TreeMap<>((key0, key1) -> ((String) key0).compareTo((String) key1) > 0 ? -1 : 1);
+        var resource = new TreeMap<>((key0, key1) -> ((String) key1).compareTo((String) key0));
         resource.put("message", message);
         resource.put(CONTENT, content);
         return resource;

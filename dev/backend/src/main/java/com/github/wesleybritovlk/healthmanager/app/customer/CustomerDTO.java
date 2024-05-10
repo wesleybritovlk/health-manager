@@ -13,7 +13,10 @@ import com.github.wesleybritovlk.healthmanager.app.healthproblem.HealthProblemDT
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomerDTO {
         @Validated
         public static record Request(
@@ -23,11 +26,11 @@ public class CustomerDTO {
                         String name,
 
                         @JsonProperty("date_birth")
-                        @NotNull(message = "Invalid or null date of birth.\r\n" +
+                        @NotNull(message = "Invalid or null date of birth. " +
                                         "Format: 'yyyy-MM-dd'") 
                         LocalDate dateBirth,
 
-                        @NotNull(message = "Invalid or null sex.\r\n" +
+                        @NotNull(message = "Invalid or null sex. " +
                                         "Enum Check: 'NOT_KNOW', 'MALE', 'FEMALE' or 'NOT_APPLICABLE'") 
                         Sex sex) {
         }
