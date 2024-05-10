@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,8 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
@@ -96,7 +93,6 @@ class CustomerServiceTest {
         @Test
         void itShouldReturnAllCustomersResponseInPage_byPageRequest() {
                 List<Customer> customers = List.of(customerUpdate);
-                Page<Customer> customerPages = new PageImpl<>(customers);
                 Pageable pageable = PageRequest.of(0, 10);
                 when(repository.findAll()).thenReturn(customers);
                 when(repository.findSeveritySumById(any(UUID.class))).thenReturn(BigInteger.valueOf(4));
@@ -107,6 +103,16 @@ class CustomerServiceTest {
                 verify(repository, times(1)).findAll();
                 verify(repository, times(1)).findSeveritySumById(any(UUID.class));
                 verify(mapper, times(1)).toResponse(any(Customer.class), any(BigInteger.class));
+        }
+
+        @Test
+        void itShouldReturnAllCustomersResponseInPage_ifPageIsEmpty() {
+                Pageable pageable = PageRequest.of(1, 10);
+                when(repository.findAll()).thenReturn(List.of());
+
+                service.findAll(pageable);
+
+                verify(repository, times(1)).findAll();
         }
 
         @Test

@@ -1,7 +1,6 @@
 package com.github.wesleybritovlk.healthmanager.app.healthproblem;
 
 import static java.util.Comparator.comparing;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -123,6 +122,19 @@ class HealthProblemServiceTest {
         verify(repository, times(1)).findById(any(UUID.class));
         verify(mapper, times(1)).toModel(any(HealthProblem.class), any(Request.class));
         verify(repository, times(1)).saveAndFlush(any(HealthProblem.class));
+    }
+
+    @Test
+    void itShouldThrowConflict_ifTryUpdateHealthProblemWithAlreadyExistingName() {
+        UUID id = UUID.randomUUID();
+        HealthProblem hp = HealthProblem.builder().id(id).customer(customer).hpName("problem2").severity(BigInteger.TWO).build();
+        Request conflictRequest = new Request(id, "problem1", BigInteger.TWO);
+        when(repository.findById(any(UUID.class))).thenReturn(Optional.of(hp));
+        when(repository.existsByCustomerIdAndHpName(any(UUID.class), any(String.class))).thenReturn(true);
+
+        assertThatThrownBy(() -> service.update(id, conflictRequest)).isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("This Health Problem already exists in this Customer");
+
     }
 
     @Test

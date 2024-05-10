@@ -110,6 +110,14 @@ class CustomerMapperTest {
                 assertThat(response.health_problems()).isEmpty();
         }
 
+        @Test       
+        void itShouldMapCustomerResponse_WithSeveritySumZero() {
+                Customer customer0 = Customer.builder().name("zero").dateBirth(LocalDate.parse("1998-07-23")).sex(Sex.NOT_KNOW).healthProblems(new TreeSet<>()).build();
+                Response response = mapper.toResponse(customer0, BigInteger.ZERO);
+                assertThat(response).isNotNull();
+                assertThat(response.score()).isEqualTo(BigDecimal.ZERO.setScale(2));
+        }
+
         @Test
         void itShouldMapCustomerResponse_WithCustomerAndHealthProblems() {
                 when(healthProblemMapper.toResponse(any(HealthProblem.class))).thenReturn(responseProblem,
