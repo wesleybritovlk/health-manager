@@ -20,8 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
@@ -96,15 +94,24 @@ class HealthProblemServiceTest {
     @Test
     void itShouldReturnAllHealthProblemsResponseInPage_byPageRequest() {
         List<HealthProblem> healthProblems = List.of(healthProblemUpdate);
-        Page<HealthProblem> healthProblemPages = new PageImpl<>(healthProblems);
         Pageable pageable = PageRequest.of(0, 10);
-        when(repository.findAll(any(Pageable.class))).thenReturn(healthProblemPages);
+        when(repository.findAll()).thenReturn(healthProblems);
         when(mapper.toResponse(any(HealthProblem.class))).thenReturn(response);
 
         service.findAll(pageable);
 
-        verify(repository, times(1)).findAll(any(Pageable.class));
+        verify(repository, times(1)).findAll();
         verify(mapper, times(1)).toResponse(any(HealthProblem.class));
+    }
+
+    @Test
+    void itShouldReturnAllHealthProblemsResponseInPage_ifPageIsEmpty() {
+        Pageable pageable = PageRequest.of(1, 10);
+        when(repository.findAll()).thenReturn(List.of());
+
+        service.findAll(pageable);
+
+        verify(repository, times(1)).findAll();
     }
 
     @Test
@@ -127,7 +134,8 @@ class HealthProblemServiceTest {
     @Test
     void itShouldThrowConflict_ifTryUpdateHealthProblemWithAlreadyExistingName() {
         UUID id = UUID.randomUUID();
-        HealthProblem hp = HealthProblem.builder().id(id).customer(customer).hpName("problem2").severity(BigInteger.TWO).build();
+        HealthProblem hp = HealthProblem.builder().id(id).customer(customer).hpName("problem2").severity(BigInteger.TWO)
+                .build();
         Request conflictRequest = new Request(id, "problem1", BigInteger.TWO);
         when(repository.findById(any(UUID.class))).thenReturn(Optional.of(hp));
         when(repository.existsByCustomerIdAndHpName(any(UUID.class), any(String.class))).thenReturn(true);
