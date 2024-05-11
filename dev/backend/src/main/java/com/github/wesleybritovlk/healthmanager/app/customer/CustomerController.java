@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.wesleybritovlk.healthmanager.app.customer.CustomerDTO.Request;
@@ -52,7 +53,10 @@ class CustomerControllerImpl implements CustomerController {
 
     @Override
     @GetMapping
-    public ResponseEntity<Page<Response>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+    public ResponseEntity<Page<Response>> getAll(
+            @RequestParam(name = "page", required = false) Integer pageNumber,
+            @RequestParam(name = "size", required = false) Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber != null ? pageNumber : 0, pageSize != null ? pageSize : 10);
         Page<Response> response = service.findAll(pageable);
         return ResponseEntity.ok(response);
     }
