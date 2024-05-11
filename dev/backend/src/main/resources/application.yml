@@ -17,5 +17,13 @@ spring:
 app:
     name: "Health Manager API"
     version: "@project.version@"
-    documentation: ""
+    documentation: "/swagger-ui.html"
     repository: https://github.com/wesleybritovlk/health-manager
+
+springdoc:
+    swagger-ui:
+        enabled: true
+        path: /api/swagger-ui.html
+    api-docs:
+        enabled: true
+        path: /api/api-docs
