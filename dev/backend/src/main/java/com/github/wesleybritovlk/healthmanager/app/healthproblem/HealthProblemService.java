@@ -1,9 +1,11 @@
 package com.github.wesleybritovlk.healthmanager.app.healthproblem;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -66,7 +68,11 @@ class HealthProblemServiceImpl implements HealthProblemService {
 
     @Override
     public Page<Response> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toResponse);
+        List<Response> responses = repository.findAll().stream().map(mapper::toResponse)
+                .sorted((res0, res1) -> res1.severity().compareTo(res0.severity())).toList();
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), responses.size());
+        return new PageImpl<>(start > end ? List.of() : responses.subList(start, end), pageable, responses.size());
     }
 
     @Override
