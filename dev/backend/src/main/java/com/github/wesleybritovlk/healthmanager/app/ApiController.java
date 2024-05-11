@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api")
 public class ApiController {
@@ -22,7 +24,8 @@ public class ApiController {
         }
 
         @GetMapping
-        public ResponseEntity<Object> getHomeApi() {
-                return ResponseEntity.ok(new Response(name, version, documentation, repository));
+        public ResponseEntity<Object> getHomeApi(HttpServletRequest request) {
+                return ResponseEntity.ok(new Response(name, version,
+                                "%s%s".formatted(request.getRequestURL(), documentation), repository));
         }
 }

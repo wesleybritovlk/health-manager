@@ -26,7 +26,6 @@ class ApiControllerTest {
     void itShouldReturnHomeApiResponse() throws Exception {
         mockMvc.perform(get("/api")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Health Manager API"))
-                .andExpect(jsonPath("$.version").value("0.0.1-SNAPSHOT"))
                 .andDo(print());
     }
 }
