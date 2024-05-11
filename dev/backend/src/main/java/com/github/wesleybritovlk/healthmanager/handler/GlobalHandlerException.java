@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -27,6 +28,9 @@ public interface GlobalHandlerException {
                         HttpServletRequest request);
 
         ResponseEntity<Object> handleUnexpectedException(Throwable ex, HttpServletRequest request);
+
+        ResponseEntity<GlobalHandlerDTO> handlePropertyReferenceException(PropertyReferenceException ex,
+                        HttpServletRequest request);
 }
 
 @ControllerAdvice
@@ -76,6 +80,17 @@ class GlobalHandlerExceptionImpl implements GlobalHandlerException {
         @ExceptionHandler(Throwable.class)
         public ResponseEntity<Object> handleUnexpectedException(Throwable ex, HttpServletRequest request) {
                 HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+                GlobalHandlerDTO dto = new GlobalHandlerDTO(ZonedDateTime.now(), status.value(),
+                                status.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
+                service.create(dto);
+                return ResponseEntity.status(status).body(dto);
+        }
+
+        @Override
+        @ExceptionHandler(PropertyReferenceException.class)
+        public ResponseEntity<GlobalHandlerDTO> handlePropertyReferenceException(PropertyReferenceException ex,
+                        HttpServletRequest request) {
+                HttpStatus status = HttpStatus.BAD_REQUEST;
                 GlobalHandlerDTO dto = new GlobalHandlerDTO(ZonedDateTime.now(), status.value(),
                                 status.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
                 service.create(dto);
