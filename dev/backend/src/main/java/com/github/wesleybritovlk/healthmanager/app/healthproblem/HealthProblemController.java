@@ -23,11 +23,64 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.wesleybritovlk.healthmanager.app.healthproblem.HealthProblemDTO.Request;
 import com.github.wesleybritovlk.healthmanager.app.healthproblem.HealthProblemDTO.Response;
 import com.github.wesleybritovlk.healthmanager.common.CommonController;
+import com.github.wesleybritovlk.healthmanager.handler.GlobalHandlerDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "health problem", description = "Access to health problems")
 public interface HealthProblemController extends CommonController<Request, Response> {
+
+    @Operation(summary = "Add a new health problem")
+    @ApiResponse(responseCode = "201", description = "Health problem created successfully!", content = @Content(schema = @Schema(type = "object", properties = {
+            @StringToClassMapItem(key = "message", value = String.class),
+            @StringToClassMapItem(key = "content", value = Object.class)
+    })))
+    @ApiResponse(responseCode = "404", description = "Customer not found, please check the id", content = @Content(schema = @Schema(ref = "GlobalHandlerResponse", implementation = GlobalHandlerDTO.class)))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(ref = "HealthProblemRequest", implementation = Request.class)))
+    ResponseEntity<Map<Object, Object>> create(Request request);
+
+    @Operation(summary = "Get health problem by id")
+    @Parameter(in = ParameterIn.PATH, name = "id", description = "Path to find health problem by id", required = true, schema = @Schema(type = "string", format = "uuid", example = "health problem uuid"))
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(type = "object", properties = {
+            @StringToClassMapItem(key = "content", value = HealthProblemDTO.Response.class)
+    })))
+    @ApiResponse(responseCode = "404", description = "Health Problem not found, please check the id", content = @Content(schema = @Schema(ref = "GlobalHandlerResponse", implementation = GlobalHandlerDTO.class)))
+    ResponseEntity<Map<Object, Object>> getById(UUID id);
+
+    @Operation(summary = "Returns all paginated health problems")
+    @Parameter(in = ParameterIn.QUERY, name = "page", description = "Query to set current page number", required = false, schema = @Schema(type = "integer", example = "0"))
+    @Parameter(in = ParameterIn.QUERY, name = "size", description = "Query to limit health problems", required = false, schema = @Schema(type = "integer", example = "10"))
+    ResponseEntity<Page<Response>> getAll(Integer pageNumber, Integer pageSize);
+
+    @Operation(summary = "Put health problem by id")
+    @Parameter(in = ParameterIn.PATH, name = "id", description = "Path to find and update health problem by id", required = true, schema = @Schema(type = "string", format = "uuid", example = "health problem uuid"))
+    @ApiResponse(responseCode = "200", description = "Health problem updated successfully!", content = @Content(schema = @Schema(type = "object", properties = {
+            @StringToClassMapItem(key = "message", value = String.class),
+            @StringToClassMapItem(key = "content", value = Object.class)
+    })))
+    @ApiResponse(responseCode = "404", description = "Health Problem not found, please check the id", content = @Content(schema = @Schema(ref = "GlobalHandlerResponse", implementation = GlobalHandlerDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Customer not found, please check the id", content = @Content(schema = @Schema(ref = "GlobalHandlerResponse", implementation = GlobalHandlerDTO.class)))
+    @ApiResponse(responseCode = "409", description = "This Health Problem already exists in this Customer", content = @Content(schema = @Schema(ref = "GlobalHandlerResponse", implementation = GlobalHandlerDTO.class)))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(ref = "HealthProblemRequest", implementation = Request.class)))
+    ResponseEntity<Map<Object, Object>> update(UUID id, Request request);
+
+    @Operation(summary = "Delete health problem by id")
+    @Parameter(in = ParameterIn.PATH, name = "id", description = "Path to delete health problem by id", required = true, schema = @Schema(type = "string", format = "uuid", example = "health problem uuid"))
+    @ApiResponse(responseCode = "200", description = "Health problem deleted successfully!", content = @Content(schema = @Schema(type = "object", properties = {
+            @StringToClassMapItem(key = "message", value = String.class),
+            @StringToClassMapItem(key = "content", value = Object.class)
+    })))
+    @ApiResponse(responseCode = "404", description = "Health Problem not found, please check the id", content = @Content(schema = @Schema(ref = "GlobalHandlerResponse", implementation = GlobalHandlerDTO.class)))
+    ResponseEntity<Map<Object, Object>> delete(UUID id);
 }
 
 @RestController

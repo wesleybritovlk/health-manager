@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HealthProblemDTO {
         @Validated
+        @Schema(name = "HealthProblemRequest", title = "HealthProblemRequest")
         public static record Request(
                         @JsonProperty("customer_id")
                         @NotNull(message = "Customer uuid is required")
@@ -31,6 +33,7 @@ public class HealthProblemDTO {
                         BigInteger severity) {
         }
 
+        @Schema(name = "HealthProblemResponse", title = "HealthProblemResponse")
         public static record Response(
                         UUID id,
                         UUID customer_id,

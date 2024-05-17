@@ -10,8 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public interface GlobalHandlerException {
                         HttpServletRequest request);
 }
 
-@ControllerAdvice
+@RestControllerAdvice
 @RequiredArgsConstructor
 class GlobalHandlerExceptionImpl implements GlobalHandlerException {
         private final GlobalHandlerService service;
@@ -66,6 +67,7 @@ class GlobalHandlerExceptionImpl implements GlobalHandlerException {
 
         @Override
         @ExceptionHandler(HttpMessageNotReadableException.class)
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
         public ResponseEntity<GlobalHandlerDTO> handleHttpMessageNotReadableException(
                         HttpMessageNotReadableException ex,
                         HttpServletRequest request) {
@@ -88,6 +90,7 @@ class GlobalHandlerExceptionImpl implements GlobalHandlerException {
 
         @Override
         @ExceptionHandler(PropertyReferenceException.class)
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
         public ResponseEntity<GlobalHandlerDTO> handlePropertyReferenceException(PropertyReferenceException ex,
                         HttpServletRequest request) {
                 HttpStatus status = HttpStatus.BAD_REQUEST;
