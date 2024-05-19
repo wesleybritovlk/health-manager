@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 
 public interface GlobalHandlerException {
@@ -32,9 +34,12 @@ public interface GlobalHandlerException {
 
         ResponseEntity<GlobalHandlerDTO> handlePropertyReferenceException(PropertyReferenceException ex,
                         HttpServletRequest request);
+
+        ResponseEntity<GlobalHandlerDTO> handlePropertyReferenceException(ConstraintViolationException ex,
+                        HttpServletRequest request);
 }
 
-@RestControllerAdvice
+@ControllerAdvice
 @RequiredArgsConstructor
 class GlobalHandlerExceptionImpl implements GlobalHandlerException {
         private final GlobalHandlerService service;
@@ -96,6 +101,19 @@ class GlobalHandlerExceptionImpl implements GlobalHandlerException {
                 HttpStatus status = HttpStatus.BAD_REQUEST;
                 GlobalHandlerDTO dto = new GlobalHandlerDTO(ZonedDateTime.now(), status.value(),
                                 status.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
+                service.create(dto);
+                return ResponseEntity.status(status).body(dto);
+        }
+
+        @Override
+        @ExceptionHandler(ConstraintViolationException.class)
+        public ResponseEntity<GlobalHandlerDTO> handlePropertyReferenceException(ConstraintViolationException ex,
+                        HttpServletRequest request) {
+                HttpStatus status = HttpStatus.BAD_REQUEST;
+                String message = ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
+                                .collect(Collectors.joining(", "));
+                GlobalHandlerDTO dto = new GlobalHandlerDTO(ZonedDateTime.now(), status.value(),
+                                status.getReasonPhrase(), message, request.getRequestURI());
                 service.create(dto);
                 return ResponseEntity.status(status).body(dto);
         }

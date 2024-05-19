@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +50,9 @@ class CustomerControllerTest {
 
         @MockBean
         private GlobalHandlerException globalHandlerException;    
+
+        @MockBean
+        private CacheManager cacheManager;
 
         @Test
         void itShouldCreateCustomer_WithCustomerDTORequest() throws Exception {

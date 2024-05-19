@@ -54,7 +54,7 @@ class CustomerMapperImpl implements CustomerMapper {
     @Override
     public Customer toModel(Customer model, Request request) {
         return Customer.builder().id(model.getId()).name(request.name()).dateBirth(request.dateBirth())
-                .sex(request.sex()).healthProblems(model.getHealthProblems()).build();
+                .sex(request.sex()).healthProblems(model.getHealthProblems()).createdAt(model.getCreatedAt()).build();
     }
 
     private BigDecimal getSeverityScore(BigInteger severitySum, RoundingMode roundingMode) {

@@ -42,7 +42,7 @@ class HealthProblemMapperImpl implements HealthProblemMapper {
     @Override
     public HealthProblem toModel(HealthProblem model, Request request) {
         return HealthProblem.builder().id(model.getId()).customer(model.getCustomer()).hpName(request.hpName())
-                .severity(request.severity()).build();
+                .severity(request.severity()).createdAt(model.getCreatedAt()).build();
     }
 
     @Override

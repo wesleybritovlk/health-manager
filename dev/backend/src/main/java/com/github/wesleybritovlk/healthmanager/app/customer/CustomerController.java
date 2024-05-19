@@ -5,6 +5,8 @@ import static com.github.wesleybritovlk.healthmanager.common.CommonResource.toRe
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -87,6 +89,7 @@ class CustomerControllerImpl implements CustomerController {
 
     @Override
     @PostMapping
+    @CacheEvict(value = { "customer", "customers" }, allEntries = true)
     public ResponseEntity<Map<Object, Object>> create(@Valid @RequestBody Request request) {
         var response = service.create(request);
         var resource = toResource("Customer created successfully!", response);
@@ -95,6 +98,7 @@ class CustomerControllerImpl implements CustomerController {
 
     @Override
     @GetMapping("{id}")
+    @Cacheable(value = "customer")
     public ResponseEntity<Map<Object, Object>> getById(@PathVariable UUID id) {
         var response = service.findById(id);
         return ResponseEntity.ok(toResource(response));
@@ -102,6 +106,7 @@ class CustomerControllerImpl implements CustomerController {
 
     @Override
     @GetMapping
+    @Cacheable(value = "customers")
     public ResponseEntity<Page<Response>> getAll(
             @RequestParam(name = "page", required = false) Integer pageNumber,
             @RequestParam(name = "size", required = false) Integer pageSize) {
@@ -112,6 +117,7 @@ class CustomerControllerImpl implements CustomerController {
 
     @Override
     @PutMapping("{id}")
+    @CacheEvict(value = { "customer", "customers" }, allEntries = true)
     public ResponseEntity<Map<Object, Object>> update(@PathVariable UUID id, @Valid @RequestBody Request request) {
         var response = service.update(id, request);
         var resource = toResource("Customer updated successfully!", response);
@@ -120,6 +126,7 @@ class CustomerControllerImpl implements CustomerController {
 
     @Override
     @DeleteMapping("{id}")
+    @CacheEvict(value = { "customer", "customers", "health-problem", "health-problems" }, allEntries = true)
     public ResponseEntity<Map<Object, Object>> delete(@PathVariable UUID id) {
         var response = service.delete(id);
         var resource = toResource("Customer deleted successfully!", response);
