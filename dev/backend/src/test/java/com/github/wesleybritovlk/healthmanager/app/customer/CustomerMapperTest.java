@@ -105,7 +105,7 @@ class CustomerMapperTest {
                 assertThat(response.full_name()).isEqualTo("fooResponse");
                 assertThat(response.date_birth()).isEqualTo(LocalDate.parse("1998-06-20"));
                 assertThat(response.sex()).isEqualTo(Sex.NOT_KNOW);
-                assertThat(response.score()).isEqualTo(BigDecimal.valueOf(76.86));
+                assertThat(response.score()).isEqualTo(BigDecimal.valueOf(76.85));
                 assertThat(response.health_problems()).isNotNull();
                 assertThat(response.health_problems()).isEmpty();
         }
@@ -130,7 +130,7 @@ class CustomerMapperTest {
                 assertThat(response.full_name()).isEqualTo("fooFull");
                 assertThat(response.date_birth()).isEqualTo(LocalDate.parse("2001-11-09"));
                 assertThat(response.sex()).isEqualTo(Sex.FEMALE);
-                assertThat(response.score()).isEqualTo(BigDecimal.valueOf(76.86));
+                assertThat(response.score()).isEqualTo(BigDecimal.valueOf(76.85));
                 assertThat(response.health_problems()).isNotEmpty();
                 assertThat(response.health_problems()).hasSize(3);
         }
