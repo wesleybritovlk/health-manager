@@ -77,7 +77,7 @@ class CustomerMapperImpl implements CustomerMapper {
     @Override
     public Response toResponse(Customer model, BigInteger severitySum) {
         return new Response(model.getId(), model.getName(), model.getDateBirth(), model.getSex(),
-                getSeverityScore(severitySum, RoundingMode.UP), getHealthProblemsToResponse(model.getHealthProblems()));
+                getSeverityScore(severitySum, RoundingMode.HALF_UP), getHealthProblemsToResponse(model.getHealthProblems()));
     }
 
     @Override
